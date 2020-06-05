@@ -1,0 +1,29 @@
+/**
+ *
+ * File Name: dev/cru.c
+ * Title    : RK3328 CRU (Clock and Reset Unit) Driver
+ * Project  : 
+ * Author   : Copyright (C) 2020 Johannes Krottmayer <krjdev@gmail.com>
+ * Created  : 2020-06-05
+ * Modified : 
+ * Revised  : 
+ * Version  : 0.1.0.0
+ * License  : ISC (see LICENSE.txt)
+ *
+ * NOTE: This code is currently below version 1.0, and therefore is considered
+ * to be lacking in some functionality or documentation, or may not be fully
+ * tested. Nonetheless, you can expect most functions to work.
+ *
+ */
+
+#include <dev/io.h>
+
+#define CRU_BASE                        0xFF440000
+#define CRU_GLB_SRST_FST_VALUE_OFFSET   0x9C
+#define CRU_GLB_SRST_FST_VALUE_MAGIC    0xFDB9
+
+void cru_reset(void)
+{
+    io_wr32(CRU_BASE + CRU_GLB_SRST_FST_VALUE_OFFSET, CRU_GLB_SRST_FST_VALUE_MAGIC);
+}
+

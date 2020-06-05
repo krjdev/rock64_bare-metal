@@ -5,9 +5,9 @@
  * Project  : 
  * Author   : Copyright (C) 2020 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2020-06-05
- * Modified : 
+ * Modified : 2020-06-05
  * Revised  : 
- * Version  : 0.1.0.0
+ * Version  : 0.1.0.1
  * License  : ISC (see LICENSE.txt)
  *
  * NOTE: This code is currently below version 1.0, and therefore is considered
@@ -39,7 +39,7 @@ L0:
     wfe
     b L0
 L1:
-    ldr x0, =_kern_stack_s
+    ldr x0, =_kern_stack_e
     mov sp, x0
     b kern_main
 L2:

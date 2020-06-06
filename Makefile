@@ -8,6 +8,7 @@ TARGET 	= hello.elf
 CCFLAGS = -Wall -I ./include -ffreestanding -mcpu=cortex-a53
 LDFLAGS = -nostdlib -T hello.lds
 
+ASRC	+= misc.S
 ASRC	+= stack.S
 ASRC	+= start.S
 
@@ -21,6 +22,7 @@ CSRC	+= lib/memcpy.c
 CSRC	+= lib/memset.c
 CSRC	+= lib/strlen.c
 
+CSRC	+= cpu.c
 CSRC	+= main.c
 
 OBJ 	+= $(CSRC:.c=.o)

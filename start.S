@@ -5,9 +5,9 @@
  * Project  : 
  * Author   : Copyright (C) 2020 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2020-06-05
- * Modified : 2020-06-05
+ * Modified : 2020-06-07
  * Revised  : 
- * Version  : 0.1.0.1
+ * Version  : 0.1.0.2
  * License  : ISC (see LICENSE.txt)
  *
  * NOTE: This code is currently below version 1.0, and therefore is considered
@@ -23,19 +23,16 @@ IMPORT_C(kern_main)
 .text
 
 ENTRY(_start)
-    mrs x0, SCTLR_EL1
-    and x0, x0, #0xFFFFFFFFFFFFFFFC
-    msr SCTLR_EL1, x0
+    /* Disable interrupts (IRQ and FIQ) */
+    msr DAIFSet, #3
     
-    mrs x0, SCTLR_EL2
-    and x0, x0, #0xFFFFFFFFFFFFFFFC
-    msr SCTLR_EL2, x0
-    
+    /* Make sure CPU0 executes kern_main only. ... */
     mrs x0, MPIDR_EL1
     and x0, x0, #0x3
     cmp x0, #0
     beq L1
 L0:
+    /* ... All other CPU's wait forerver */
     wfe
     b L0
 L1:
@@ -43,6 +40,7 @@ L1:
     mov sp, x0
     b kern_main
 L2:
+    /* Should never be reached, wait forerver */
     wfe
     b L2
 

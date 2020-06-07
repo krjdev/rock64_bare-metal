@@ -32,3 +32,7 @@ $ make
 ## Output
 
 ![alt text](https://github.com/krjdev/rock64_bare-metal/blob/master/img/output.png)
+
+## TODO
+
+* Add interrupt support

@@ -5,9 +5,9 @@
  * Project  : 
  * Author   : Copyright (C) 2020 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2020-06-05
- * Modified : 2020-06-07
+ * Modified : 2020-06-08
  * Revised  : 
- * Version  : 0.1.0.2
+ * Version  : 0.1.1.0
  * License  : ISC (see LICENSE.txt)
  *
  * NOTE: This code is currently below version 1.0, and therefore is considered
@@ -26,22 +26,34 @@ ENTRY(_start)
     /* Disable interrupts (IRQ and FIQ) */
     msr DAIFSet, #3
     
-    /* Make sure CPU0 executes kern_main only. ... */
+    /* Make sure CPU0 executes kern_main only, ... */
     mrs x0, MPIDR_EL1
     and x0, x0, #0x3
     cmp x0, #0
     beq L1
 L0:
-    /* ... All other CPU's wait forerver */
+    /* ... all other CPU's wait forerver */
     wfe
     b L0
 L1:
+    /* Setup Stack Pointer */
     ldr x0, =_kern_stack_e
     mov sp, x0
-    b kern_main
+    /* Clear BSS, if any */
+    ldr x0, =_kern_bss_s
+    ldr x1, =_kern_bss_e
+    sub x1, x1, x0
+    mov x2, #0x0
+    cbz x1, L3
 L2:
+    strb w2, [x0], #1
+    sub x1, x1, #1
+    cbnz x1, L2
+L3:
+    bl kern_main
+L4:
     /* Should never be reached, wait forerver */
     wfe
-    b L2
+    b L4
 
 .end

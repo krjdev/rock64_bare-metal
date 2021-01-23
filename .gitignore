@@ -5,4 +5,7 @@
 *.*.swp
 *.*.kate-swp
 .directory
+*.elf
+*.elf.map
+
 GIT_COMMIT.txt

@@ -1,4 +1,6 @@
 # PINE64 ROCK64 Bare-Metal
+# 
+# Makefile
 
 CROSS_COMPILE=aarch64-none-elf-
 

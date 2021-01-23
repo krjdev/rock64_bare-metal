@@ -1,38 +1,69 @@
 # PINE64 Rock64 Simple Bare-Metal Example
 
-**Required tools**
+**Features**
 
-* GCC for AArch64
+* Basic MMU support
+* Basic exception handling
+* Minimalistic **libc**
 
-## How to build
+## Build
 
-* Get the sources  
-``
+### Bare-Metal Example
+#### Bare-Metal Example - Get the source code
+```
 $ git clone https://github.com/krjdev/rock64_bare-metal.git
-``  
-* Build the example  
-``
 $ cd rock64_bare-metal
-``  
-``
-$ make
-``
+```
+#### Bare-Metal Example - Build the example
+```
+$ make CROSS_COMPILE=/path/to/gcc/bin/aarch64-none-elf-
+```
 
-## How to start (U-Boot)
+### U-Boot
+#### Required Tools:
 
-* Load the example into memory  
-``
-=> fatload mmc 1 0x30000000 hello.elf
-``  
-* Execute example  
-``
-=> bootelf 0x30000000
-``
+* **GCC** for AArch64  
+[Offical Toolchains from ARM](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads)  
+* Device Tree Compiler
 
-## Output
+#### ATF - Get the source code from ARM Trusted Firmware
+```
+$ git clone https://github.com/ARM-software/arm-trusted-firmware.git
+$ cd arm-trusted-firmware
+```
+#### ATF - Build ATF for PINE64 ROCK64
+```
+$ make distclean
+$ make CROSS_COMPILE=/path/to/gcc/bin/aarch64-none-elf- PLAT=rk3328
+```
+#### ATF - Export ELF for U-Boot
+```
+$ export BL31=/path/to/arm-trusted-firmware/build/rk3328/release/bl31/bl31.elf
+```
 
-![alt text](https://github.com/krjdev/rock64_bare-metal/blob/master/img/output.png)
+**NOTE**
+Might be not required for starting the Bare-Metal Example.
+
+#### U-Boot - Get the source code from U-Boot
+```
+$ git clone https://github.com/u-boot/u-boot.git
+$ cd u-boot
+```
+#### U-Boot - Build U-Boot for PINE64 ROCK64
+```
+$ make mrproper
+$ make rock64-rk3328_defconfig
+$ make CROSS_COMPILE=/path/to/gcc/bin/aarch64-none-elf-
+```
+
+## Run
+```
+=> fatload mmc 1 0x10000000 main.elf
+=> bootelf 0x10000000
+``` 
 
 ## TODO
 
-* Add interrupt support
+* Add fully interrupt support
+* Add SMP support
+* Add Thread support

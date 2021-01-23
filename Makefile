@@ -1,43 +1,64 @@
+# PINE64 ROCK64 Bare-Metal
+
 CROSS_COMPILE=aarch64-none-elf-
 
-RM 	= rm -rf
-CC 	= $(CROSS_COMPILE)gcc
-LD	= $(CROSS_COMPILE)ld
+# Target Output
+TARGET		= main.elf
 
-TARGET 	= hello.elf
-CCFLAGS = -Wall -I ./include -ffreestanding -mcpu=cortex-a53
-LDFLAGS = -nostdlib -T hello.lds
+RM		= rm -rf
+CC		= $(CROSS_COMPILE)gcc
+LD		= $(CROSS_COMPILE)ld
 
-ASRC	+= misc.S
-ASRC	+= stack.S
-ASRC	+= start.S
+ASFLAGS		+= -Wa,-mcpu=cortex-a53
 
-OBJ 	+= $(ASRC:.S=.o)
+CCFLAGS		+= -Wall
+CCFLAGS		+= -Wextra
+CCFLAGS		+= -ffreestanding
+CCFLAGS		+= -ffunction-sections
+CCFLAGS		+= -I ./include
+CCFLAGS		+= -mcpu=cortex-a53
 
-CSRC	+= dev/cru.c
-CSRC	+= dev/io.c
-CSRC	+= dev/uart.c
+LDFLAGS		+= -nostdlib
+LDFLAGS		+= --gc-sections
+LDFLAGS		+= -Map=$(TARGET).map
 
-CSRC	+= lib/memcpy.c
-CSRC	+= lib/memset.c
-CSRC	+= lib/strlen.c
+# Linker Script
+include ld/files.mk
 
-CSRC	+= cpu.c
-CSRC	+= main.c
+# Architecture Sources
+include asm/files.mk
 
-OBJ 	+= $(CSRC:.c=.o)
+# (Simple) Standard C Library Sources
+include libc/files.mk
+
+# Device Sources
+include dev/files.mk
+
+# Utility Sources
+include util/files.mk
+
+CSRC		+= init.c
+CSRC		+= intr.c
+CSRC		+= main.c
+
+OBJ 		+= $(ASRC:.S=.o)
+OBJ 		+= $(CSRC:.c=.o)
 
 all: main
 
 main: $(OBJ)
-	$(LD) -o $(TARGET) $(LDFLAGS) $(OBJ)
+	@echo "[LD] $(TARGET)"
+	@$(LD) -o $(TARGET) $(LDFLAGS) $(OBJ)
 
 %.o: %.c
-	$(CC) -c $(CCFLAGS) $< -o $@
+	@echo "[CC] $@"
+	@$(CC) -c $(CCFLAGS) -o $@ $<
 
 %.o: %.S
-	$(CC) -c $(CCFLAGS) $< -o $@
+	@echo "[AS] $@"
+	@$(CC) -c $(CCFLAGS) $(ASFLAGS) -o $@ $<
 
 .PHONY: clean
 clean:
-	$(RM) $(TARGET) $(OBJ) *~
+	@echo "[CLEAN]"
+	@$(RM) $(OBJ) $(TARGET) $(TARGET).map *~

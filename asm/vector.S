@@ -16,9 +16,9 @@
  *
  */
 
-#include <asm.h>
+#include <asm/asm.h>
 
-IMPORT_C(exce_handler)
+IMPORT_C(excp_handler)
 IMPORT_C(intr_handler)
 
 .section .isr_vector
@@ -691,7 +691,12 @@ _vec_tbl_el1_e:
 
 /* Exception handler */
 _exce_handler:
-    bl exce_handler
+    ldr x5, =0xFC000000
+    and x6, x5, x2
+    asr x6, x6, #26
+    mov x5, #0x15
+    cmp x6, x6
+    beq _sysc_handler
     ldp x0, x1, [sp], #16
     ldp x2, x3, [sp], #16
     ldp x4, x5, [sp], #16
@@ -708,6 +713,68 @@ _exce_handler:
 /* Interrupt handler */
 _intr_handler:
     bl intr_handler
+    ldp x0, x1, [sp], #16
+    ldp x2, x3, [sp], #16
+    ldp x4, x5, [sp], #16
+    ldp x6, x7, [sp], #16
+    ldp x8, x9, [sp], #16
+    ldp x10, x11, [sp], #16
+    ldp x12, x13, [sp], #16
+    ldp x14, x15, [sp], #16
+    ldp x16, x17, [sp], #16
+    ldp x18, x19, [sp], #16
+    ldp x29, x30, [sp], #16
+    eret
+
+/* Sycall handler */
+_sysc_handler:
+    ldr x5, =0x1FFFFFF
+    and x6, x2, x5
+_sysc_handler_exit:
+    mov x5, #0
+    cmp x6, x5
+    bne _sysc_handler_open
+    bl _sys_exit
+    b _sysc_handler_return
+_sysc_handler_open:
+    mov x5, #1
+    cmp x6, x5
+    bne _sysc_handler_close
+    bl _sys_open
+    b _sysc_handler_return
+_sysc_handler_close:
+    mov x5, #2
+    cmp x6, x5
+    bne _sysc_handler_write
+    bl _sys_close
+    b _sysc_handler_return
+_sysc_handler_write:
+    mov x5, #3
+    cmp x6, x5
+    bne _sysc_handler_read
+    bl _sys_write
+    b _sysc_handler_return
+_sysc_handler_read:
+    mov x5, #4
+    cmp x6, x5
+    bne _sysc_handler_sleep
+    bl _sys_read
+    b _sysc_handler_return
+_sysc_handler_sleep:
+    mov x5, #5
+    cmp x6, x5
+    bne _sysc_handler_abort
+    bl _sys_sleep
+    b _sysc_handler_return
+_sysc_handler_abort:
+    mov x5, #6
+    cmp x6, x5
+    bne _sysc_handler_unknown
+    bl _sys_abort
+    b _sysc_handler_return
+_sysc_handler_unknown:
+    bl _sys_unknown
+_sysc_handler_return:
     ldp x0, x1, [sp], #16
     ldp x2, x3, [sp], #16
     ldp x4, x5, [sp], #16

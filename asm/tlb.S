@@ -1,11 +1,11 @@
 /**
  *
  * File Name: asm/tlb.S
- * Title    : AArch64 Memory Translation
+ * Title    : AArch64 Kernel
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-23
- * Modified : 
+ * Modified : 2021-01-25
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -16,7 +16,7 @@
  *
  */
 
-#include <asm.h>
+#include <asm/asm.h>
 
 #define TLB_4K              4096
 
@@ -40,9 +40,9 @@ _tlb_el2_tbb0_lv1_0_kernel:
 .align 12
 _tlb_el2_tbb0_lv1_0_mmio:
 .space TLB_4K
-.align 12
 /* EL1 Pagetables */
 _tlb_el1_tbb0_lv0:
+.align 12
 .space TLB_4K
 .align 12
 _tlb_el1_tbb0_lv1_0:
@@ -258,6 +258,10 @@ FUNCTION(_cpu_el1_tlb_mair)
 
 FUNCTION(_cpu_el1_tlb_tbbr0)
     mrs x0, TTBR0_EL1
+    ret
+
+FUNCTION(_cpu_el1_tlb_tbbr1)
+    mrs x0, TTBR1_EL1
     ret
 
 .end

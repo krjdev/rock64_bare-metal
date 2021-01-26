@@ -1,10 +1,10 @@
 /**
  *
- * File Name: libc/stdlib/realloc.c
+ * File Name: libc/stdlib/abort.c
  * Title    : Simple Standard C Library
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
- * Created  : 2021-01-16
+ * Created  : 2021-01-25
  * Modified : 
  * Revised  : 
  * Version  : 0.1.0.0
@@ -16,31 +16,9 @@
  *
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <heap.h>
+#include <syscall.h>
 
-void *realloc(void *ptr, size_t len)
+void abort(void)
 {
-    int size;
-    void *p;
-    
-    if (!ptr)
-        return NULL;
-    
-    if (len < 1)
-        return NULL;
-    
-    size = heap_size(ptr);
-    
-    if (!size)
-        return NULL;
-    
-    p = heap_alloc(len);
-    
-    if (!p)
-        return NULL;
-    
-    memcpy(p, ptr, size);
-    return p;
+    sys_abort();
 }

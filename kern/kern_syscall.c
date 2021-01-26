@@ -25,19 +25,19 @@
 void kern_syscall_exit(int code)
 {
     puts("SYS_EXIT\r\n");
-    kern_panic(0);
+    kern_panic(__func__, 0);
 }
 
 int kern_syscall_open(const char *file, int flags)
 {
     puts("SYS_OPEN\r\n");
-    kern_panic(0);
+    kern_panic(__func__, 0);
 }
 
 void kern_syscall_close(int fd)
 {
     puts("SYS_CLOSE\r\n");
-    kern_panic(0);
+    kern_panic(__func__, 0);
 }
 
 int kern_syscall_write(int fd, const uint8_t *buf, int len)
@@ -47,26 +47,25 @@ int kern_syscall_write(int fd, const uint8_t *buf, int len)
 
 int kern_syscall_read(int fd, uint8_t *buf, int len)
 {
-    puts("SYS_READ\r\n");
-    kern_panic(0);
+    return kern_vfs_read(fd, buf, len);
 }
 
 void kern_syscall_sleep(int seconds)
 {
     puts("SYS_SLEEP\r\n");
-    kern_panic(0);
+    kern_panic(__func__, 0);
 }
 
 void kern_syscall_abort(void)
 {
     puts("SYS_ABORT\r\n");
-    kern_panic(0);
+    kern_panic(__func__, 0);
 }
 
 void kern_syscall_unknown(void)
 {
     puts("SYS_UNKNOWN\r\n");
-    kern_panic(0);
+    kern_panic(__func__, 0);
 }
 
 int kern_syscall_init(void)

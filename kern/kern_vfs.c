@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-25
- * Modified : 
+ * Modified : 2021-01-26
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -36,5 +36,8 @@ int kern_vfs_write(int fd, const uint8_t *buf, int len)
 
 int kern_vfs_read(int fd, uint8_t *buf, int len)
 {
-    return ESUCCESS;
+    if (fd != VFS_FD_STDIN)
+        return ENODIR;
+    
+    return kern_dev_read_class(DEV_CLASS_STDIN, buf, len);
 }

@@ -340,6 +340,39 @@ int kern_dev_write_class(uint32_t d_class, const uint8_t *buf, int len)
     return ret;
 }
 
+int kern_dev_read_class(uint32_t d_class, const uint8_t *buf, int len)
+{
+    int i;
+    int ret;
+    struct _kern_dev *dev;
+    
+    if (!(d_class & DEV_CLASS_STDIN))
+        return EINVAL;
+    
+    if (!buf)
+        return EINVAL;
+    
+    if (len < 1)
+        return EINVAL;
+    
+    for (i = 0; i < kern_devs_size; i++) {
+        dev = &kern_devs[i];
+        
+        if (!(dev->flags & DEV_FLAG_USED))
+            continue;
+        
+        if (!(dev->class & DEV_CLASS_STDIN))
+            continue;
+        
+        ret = dev->op_read(dev, buf, len);
+        
+        if (ret != len)
+            return EIOERR;
+    }
+    
+    return ret;
+}
+
 int kern_dev_init(void)
 {
     int len;

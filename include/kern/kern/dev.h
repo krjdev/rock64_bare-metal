@@ -56,5 +56,6 @@ extern int kern_dev_ioctl(dev_t *dev, int op, void *val);
 
 /* Device operations by class */
 extern int kern_dev_write_class(uint32_t d_class, const uint8_t *buf, int len);
+extern int kern_dev_read_class(uint32_t d_class, uint8_t *buf, int len);
 
 #endif

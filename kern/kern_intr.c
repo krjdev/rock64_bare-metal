@@ -24,17 +24,25 @@
 
 #include <kern/panic.h>
 
-#define EXCP_LEVEL_EL2      2
 #define EXCP_LEVEL_EL1      1
+#define EXCP_LEVEL_EL2      2
+
+#define INTR_INDEX_FIQ      1
+#define INTR_INDEX_IRQ      2
+
+#define INTR_MAX            64
+
+#define INTR_FLAG_USED      0x00000001
 
 struct _kern_intr {
-    int index;
-    int type;
-    int irq;
+    uint32_t flags;
+    int irq_nr;
     void (*handler)(void);
 };
 
-struct _kern_intr *kern_intr_list;
+static struct _kern_intr *kern_intr_list;
+static int kern_intr_size;
+static int kern_intr_count;
 
 void excp_handler(int excp_level, int index, uint64_t reg_esr, uint64_t reg_far)
 {
@@ -83,19 +91,34 @@ void excp_handler(int excp_level, int index, uint64_t reg_esr, uint64_t reg_far)
         }
     } else {
         puts("Caught unkown exception\r\n");
-        kern_panic(0);
-        abort();
+        kern_panic(__func__, 0);
     }
 }
 
 void intr_handler(int excp_level, int index)
 {
-    if (excp_level == EXCP_LEVEL_EL1)
-        puts("Caught interrupt in EL1\r\n");
-    else
-        puts("Caught interrupt in EL2\r\n");
+    int i;
+    struct _kern_intr *intr;
     
-    abort();
+    if (excp_level == EXCP_LEVEL_EL2) {
+        puts("Caught interrupt from EL2\r\n");
+        kern_panic(__func__, 0);
+    }
+    
+    if (index == INTR_INDEX_FIQ) {
+        puts("Caught FIQ\r\n");
+        kern_panic(__func__, 0);
+    } else {
+        puts("Caught IRQ\r\n");
+        kern_panic(__func__, 0);
+    }
+    
+    for (i = 0; i < kern_intr_size; i++) {
+        intr = &kern_intr_list[i];
+        
+        if (!(intr->flags & INTR_FLAG_USED))
+            continue;
+    }
 }
 
 void kern_excp_register(int type, void (*handler)(void))
@@ -110,5 +133,17 @@ int kern_intr_register(int irq_nr, void (*handler)(void))
 
 int kern_intr_init(void)
 {
+    struct _kern_intr *intr;
+    
+    kern_intr_list = NULL;
+    intr = (struct _kern_intr *) malloc(sizeof(struct _kern_intr) * INTR_MAX);
+    
+    if (!intr)
+        return ENOMEM;
+    
+    kern_intr_list = intr;
+    memset(kern_intr_list, 0, sizeof(struct _kern_intr) * INTR_MAX);
+    kern_intr_size = INTR_MAX;
+    kern_intr_count = 0;
     return ESUCCESS;
 }

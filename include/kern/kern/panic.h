@@ -19,6 +19,6 @@
 #ifndef ROCK64_KERN_KERN_PANIC_H
 #define ROCK64_KERN_KERN_PANIC_H
 
-extern void kern_panic(int err);
+extern void kern_panic(const char *func, int err);
 
 #endif

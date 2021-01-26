@@ -1,7 +1,7 @@
 /**
  *
  * File Name: libc/stdlib/abort.c
- * Title    : Simple Standard C Library
+ * Title    : C Library
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-25

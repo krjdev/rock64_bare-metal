@@ -1,11 +1,11 @@
 /**
  *
  * File Name: libc/stdlib/free.c
- * Title    : Simple Standard C Library
+ * Title    : C Library
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-16
- * Modified : 
+ * Modified : 2021-01-26
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)

@@ -1,5 +1,10 @@
 # PINE64 Rock64 Simple Bare-Metal Example
 
+**ATTENTION**
+
+This branch is a development branch. Building currently fails
+because some required files are not checked in.
+
 **Features**
 
 * Basic MMU support
@@ -9,6 +14,10 @@
 ## Build
 
 ### Bare-Metal Example
+#### Required Tools:
+
+* **GCC** for AArch64  
+[Offical Toolchains from ARM](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads)  
 #### Bare-Metal Example - Get the source code
 ```
 $ git clone https://github.com/krjdev/rock64_bare-metal.git

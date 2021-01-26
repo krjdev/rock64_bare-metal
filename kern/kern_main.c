@@ -36,43 +36,43 @@ void kern_main(void)
     ret = kern_intr_init();
     
     if (ret != ESUCCESS)
-        kern_panic(ret);
+        kern_panic(__func__, ret);
     
     /* TODO: Setup pagetables */
     ret = kern_vm_init();
     
     if (ret != ESUCCESS)
-        kern_panic(ret);
+        kern_panic(__func__, ret);
     
     /* Setup devices */
     ret = kern_dev_init();
     
     if (ret != ESUCCESS)
-        kern_panic(ret);
+        kern_panic(__func__, ret);
     
     /* Setup virtual filesystem */
     ret = kern_vfs_init();
     
     if (ret != ESUCCESS)
-        kern_panic(ret);
+        kern_panic(__func__, ret);
     
     /* TODO: Setup syscalls */
     ret = kern_syscall_init();
     
     if (ret != ESUCCESS)
-        kern_panic(ret);
+        kern_panic(__func__, ret);
     
     /* TODO: Setup scheduler */
     ret = kern_sched_init();
     
     if (ret != ESUCCESS)
-        kern_panic(ret);
+        kern_panic(__func__, ret);
     
     /* TODO: Setup kernel threads */
     ret = kern_thread_init();
     
     if (ret != ESUCCESS)
-        kern_panic(ret);
+        kern_panic(__func__, ret);
     
     puts("PINE64 ROCK64 Bare-Metal\r\n");
     puts("Starting user application...\r\n");

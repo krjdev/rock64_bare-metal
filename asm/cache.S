@@ -16,7 +16,7 @@
  *
  */
 
-#include <asm.h>
+#include <asm/asm.h>
 
 .text
 

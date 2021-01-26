@@ -2,4 +2,6 @@
 #
 # ld
 
-LDFLAGS		+= -T ld/main.ld
+LDFLAGS_KERN	+= -T ld/kern.ld
+LDFLAGS_USER	+= -T ld/user.ld
+LDFLAGS_MAIN	+= -T ld/main.ld

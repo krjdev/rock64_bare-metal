@@ -340,7 +340,7 @@ int kern_dev_write_class(uint32_t d_class, const uint8_t *buf, int len)
     return ret;
 }
 
-int kern_dev_read_class(uint32_t d_class, const uint8_t *buf, int len)
+int kern_dev_read_class(uint32_t d_class, uint8_t *buf, int len)
 {
     int i;
     int ret;

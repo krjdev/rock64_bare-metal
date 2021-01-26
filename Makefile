@@ -6,10 +6,14 @@ CROSS_COMPILE=aarch64-none-elf-
 
 # Target Output
 TARGET		= main.elf
+TARGET_KERN	= kern.elf
+TARGET_USER	= user.elf
 
 RM		= rm -rf
+CP		= cp -Rf
 CC		= $(CROSS_COMPILE)gcc
 LD		= $(CROSS_COMPILE)ld
+OBJCOPY		= $(CROSS_COMPILE)objcopy
 
 ASFLAGS		+= -Wa,-mcpu=cortex-a53
 
@@ -17,50 +21,92 @@ CCFLAGS		+= -Wall
 CCFLAGS		+= -Wextra
 CCFLAGS		+= -ffreestanding
 CCFLAGS		+= -ffunction-sections
-CCFLAGS		+= -I ./include
 CCFLAGS		+= -mcpu=cortex-a53
 
+# Kernel
+CCFLAGS_KERN	= $(CCFLAGS)
+CCFLAGS_KERN	+= -I ./include/kern
+
+# Userland
+CCFLAGS_USER	= $(CCFLAGS)
+CCFLAGS_USER	+= -I ./include/user
+
+# Global GNU ld flags
 LDFLAGS		+= -nostdlib
-LDFLAGS		+= --gc-sections
-LDFLAGS		+= -Map=$(TARGET).map
+
+# Kernel
+LDFLAGS_KERN	= $(LDFLAGS)
+LDFLAGS_KERN	+= --gc-sections
+LDFLAGS_KERN	+= -Map=$(TARGET_KERN).map
+
+# Userland
+LDFLAGS_USER	= $(LDFLAGS)
+LDFLAGS_USER	+= --gc-sections
+LDFLAGS_USER	+= -Map=$(TARGET_USER).map
+
+# Kernel
+LDFLAGS_MAIN	= $(LDFLAGS)
+LDFLAGS_MAIN	+= -Map=$(TARGET).map
 
 # Linker Script
 include ld/files.mk
 
-# Architecture Sources
+# Assembler Sources
 include asm/files.mk
 
-# (Simple) Standard C Library Sources
-include libc/files.mk
-
-# Device Sources
+# Kernel
+include kern/files.mk
+include libkern/files.mk
 include dev/files.mk
 
-# Utility Sources
-include util/files.mk
+# Userland
+include libc/files.mk
+include files.mk
 
-CSRC		+= init.c
-CSRC		+= intr.c
-CSRC		+= main.c
+AOBJ_KERN 	+= $(ASRC_KERN:.S=.o)
+COBJ_KERN 	+= $(CSRC_KERN:.c=.o)
 
-OBJ 		+= $(ASRC:.S=.o)
-OBJ 		+= $(CSRC:.c=.o)
+AOBJ_USER 	+= $(ASRC_USER:.S=.o)
+COBJ_USER 	+= $(CSRC_USER:.c=.o)
 
 all: main
 
-main: $(OBJ)
+main: kern user
 	@echo "[LD] $(TARGET)"
-	@$(LD) -o $(TARGET) $(LDFLAGS) $(OBJ)
+	@$(OBJCOPY) -O elf64-littleaarch64 -S $(TARGET_USER) $(TARGET_USER) 2> /dev/null
+	@$(LD) -o $(TARGET) $(LDFLAGS_MAIN) $(TARGET_KERN) $(TARGET_USER)
 
-%.o: %.c
+# Kernel
+kern: $(AOBJ_KERN) $(COBJ_KERN)
+	@echo "[LD] $(TARGET_KERN)"
+	@$(LD) -o $(TARGET_KERN) $(LDFLAGS_KERN) $(AOBJ_KERN) $(COBJ_KERN)
+
+$(COBJ_KERN): %.o: %.c
 	@echo "[CC] $@"
-	@$(CC) -c $(CCFLAGS) -o $@ $<
+	@$(CC) -c $(CCFLAGS_KERN) -o $@ $<
 
-%.o: %.S
+$(AOBJ_KERN): %.o: %.S
 	@echo "[AS] $@"
-	@$(CC) -c $(CCFLAGS) $(ASFLAGS) -o $@ $<
+	@$(CC) -c $(CCFLAGS_KERN) $(ASFLAGS) -o $@ $<
+
+# Userland
+user: $(AOBJ_USER) $(COBJ_USER)
+	@echo "[LD] $(TARGET_USER)"
+	@$(LD) -o $(TARGET_USER) $(LDFLAGS_USER) $(AOBJ_USER) $(COBJ_USER)
+	
+$(COBJ_USER): %.o: %.c
+	@echo "[CC] $@"
+	@$(CC) -c $(CCFLAGS_USER) -o $@ $<
+
+$(AOBJ_USER): %.o: %.S
+	@echo "[AS] $@"
+	@$(CC) -c $(CCFLAGS_USER) $(ASFLAGS) -o $@ $<
 
 .PHONY: clean
 clean:
 	@echo "[CLEAN]"
-	@$(RM) $(OBJ) $(TARGET) $(TARGET).map *~
+	@$(RM) $(AOBJ_KERN) $(COBJ_KERN)
+	@$(RM) $(TARGET_KERN) $(TARGET_KERN).map
+	@$(RM) $(AOBJ_USER) $(COBJ_USER)
+	@$(RM) $(TARGET_USER) $(TARGET_USER).map
+	@$(RM) $(TARGET) $(TARGET).map

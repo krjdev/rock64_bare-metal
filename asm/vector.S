@@ -734,46 +734,62 @@ _sysc_handler_exit:
     mov x5, #0
     cmp x6, x5
     bne _sysc_handler_open
+    stp x29, x30, [sp, #-16]!
     bl _sys_exit
+    ldp x29, x30, [sp], #16
     b _sysc_handler_return
 _sysc_handler_open:
     mov x5, #1
     cmp x6, x5
     bne _sysc_handler_close
+    stp x29, x30, [sp, #-16]!
     bl _sys_open
+    ldp x29, x30, [sp], #16
     b _sysc_handler_return
 _sysc_handler_close:
     mov x5, #2
     cmp x6, x5
     bne _sysc_handler_write
+    stp x29, x30, [sp, #-16]!
     bl _sys_close
+    ldp x29, x30, [sp], #16
     b _sysc_handler_return
 _sysc_handler_write:
     mov x5, #3
     cmp x6, x5
     bne _sysc_handler_read
+    stp x29, x30, [sp, #-16]!
     bl _sys_write
+    ldp x29, x30, [sp], #16
     b _sysc_handler_return
 _sysc_handler_read:
     mov x5, #4
     cmp x6, x5
     bne _sysc_handler_sleep
+    stp x29, x30, [sp, #-16]!
     bl _sys_read
+    ldp x29, x30, [sp], #16
     b _sysc_handler_return
 _sysc_handler_sleep:
     mov x5, #5
     cmp x6, x5
     bne _sysc_handler_abort
+    stp x29, x30, [sp, #-16]!
     bl _sys_sleep
+    ldp x29, x30, [sp], #16
     b _sysc_handler_return
 _sysc_handler_abort:
     mov x5, #6
     cmp x6, x5
     bne _sysc_handler_unknown
+    stp x29, x30, [sp, #-16]!
     bl _sys_abort
+    ldp x29, x30, [sp], #16
     b _sysc_handler_return
 _sysc_handler_unknown:
+    stp x29, x30, [sp, #-16]!
     bl _sys_unknown
+    ldp x29, x30, [sp], #16
 _sysc_handler_return:
     ldp x0, x1, [sp], #16
     ldp x2, x3, [sp], #16

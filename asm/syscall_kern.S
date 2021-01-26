@@ -30,43 +30,59 @@ IMPORT_C(kern_syscall_unknown)
 .text
 
 FUNCTION(_sys_exit)
-    ldp x0, x1, [sp]
+    ldp x0, x1, [sp, #16]
+    stp x29, x30, [sp, #-16]!
     bl kern_syscall_exit
+    ldp x29, x30, [sp], #16
     ret
 
 FUNCTION(_sys_open)
-    ldp x0, x1, [sp]
+    ldp x0, x1, [sp, #16]
+    stp x29, x30, [sp, #-16]!
     bl kern_syscall_open
+    ldp x29, x30, [sp], #16
     ret
 
 FUNCTION(_sys_close)
-    ldp x0, x1, [sp]
+    ldp x0, x1, [sp, #16]
+    stp x29, x30, [sp, #-16]!
     bl kern_syscall_close
+    ldp x29, x30, [sp], #16
     ret
 
 FUNCTION(_sys_write)
-    ldp x0, x1, [sp]
-    ldp x2, x3, [sp, #16]
+    ldp x0, x1, [sp, #16]
+    ldp x2, x3, [sp, #32]
+    stp x29, x30, [sp, #-16]!
     bl kern_syscall_write
+    ldp x29, x30, [sp], #16
     ret
 
 FUNCTION(_sys_read)
-    ldp x0, x1, [sp]
-    ldp x2, x3, [sp, #16]
+    ldp x0, x1, [sp, #16]
+    ldp x2, x3, [sp, #32]
+    stp x29, x30, [sp, #-16]!
     bl kern_syscall_read
+    ldp x29, x30, [sp], #16
     ret
 
 FUNCTION(_sys_sleep)
-    ldp x0, x1, [sp]
+    ldp x0, x1, [sp, #16]
+    stp x29, x30, [sp, #-16]!
     bl kern_syscall_sleep
+    ldp x29, x30, [sp], #16
     ret
 
 FUNCTION(_sys_abort)
+    stp x29, x30, [sp, #-16]!
     bl kern_syscall_abort
+    ldp x29, x30, [sp], #16
     ret
 
 FUNCTION(_sys_unknown)
+    stp x29, x30, [sp, #-16]!
     bl kern_syscall_unknown
+    ldp x29, x30, [sp], #16
     ret
 
 .end

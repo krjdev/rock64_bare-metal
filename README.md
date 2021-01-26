@@ -1,15 +1,26 @@
-# PINE64 Rock64 Simple Bare-Metal Example
+# PINE64 Rock64 Bare-Metal Example
 
-**ATTENTION**
+## Features
 
-This branch is a development branch. Building currently fails
-because some required files are not checked in.
+**Kernel**
 
-**Features**
++ Basic device handling
++ Basic syscall support
 
-* Basic MMU support
-* Basic exception handling
-* Minimalistic **libc**
+**Userland**
+
++ Minimalistic **libc**
+
+## TODO
+
+* MMU support (currently disabled)
+* Implement more syscalls
+* Add fully interrupt support
+* Add fully exception support
+* Add SMP support
+* Add Kerne thread support
+* Add ELF support
+* Add more **libc** functions
 
 ## Build
 
@@ -65,14 +76,23 @@ $ make rock64-rk3328_defconfig
 $ make CROSS_COMPILE=/path/to/gcc/bin/aarch64-none-elf-
 ```
 
-## Run
+## Run (U-Boot)
 ```
 => fatload mmc 1 0x10000000 main.elf
 => bootelf 0x10000000
-``` 
+```
 
-## TODO
-
-* Add fully interrupt support
-* Add SMP support
-* Add Thread support
+## LICENSE
+> Copyright (c) 2020-2021 [Johannes Krottmayer](mailto:krjdev@gmail.com)  
+>  
+> Permission to use, copy, modify, and/or distribute this software for any  
+> purpose with or without fee is hereby granted, provided that the above  
+> copyright notice and this permission notice appear in all copies.  
+>  
+> THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  
+> WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF  
+> MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR  
+> ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES  
+> WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN  
+> ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF  
+> OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 

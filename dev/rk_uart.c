@@ -121,7 +121,7 @@ int rk_uart_init(void)
     rk_uart = (struct _rk_uart *) malloc(sizeof(struct _rk_uart));
     
     if (!rk_uart)
-        return ENODEV;
+        return ENOMEM;
     
     dev = kern_dev_create(DEV_CLASS_STDOUT | DEV_CLASS_STDIN, 
                           DEV_TYPE_CHAR, 0, (void *) rk_uart);

@@ -25,11 +25,11 @@ CCFLAGS		+= -mcpu=cortex-a53
 
 # Kernel
 CCFLAGS_KERN	= $(CCFLAGS)
-CCFLAGS_KERN	+= -I ./include/kern
+CCFLAGS_KERN	+= -I ./sys/include
 
 # Userland
 CCFLAGS_USER	= $(CCFLAGS)
-CCFLAGS_USER	+= -I ./include/user
+CCFLAGS_USER	+= -I ./include
 
 # Global GNU ld flags
 LDFLAGS		+= -nostdlib
@@ -48,19 +48,10 @@ LDFLAGS_USER	+= -Map=$(TARGET_USER).map
 LDFLAGS_MAIN	= $(LDFLAGS)
 LDFLAGS_MAIN	+= -Map=$(TARGET).map
 
-# Linker Script
-include ld/files.mk
-
-# Assembler Sources
-include asm/files.mk
-
 # Kernel
-include kern/files.mk
-include libkern/files.mk
-include dev/files.mk
+include sys/files.mk
 
 # Userland
-include libc/files.mk
 include files.mk
 
 AOBJ_KERN 	+= $(ASRC_KERN:.S=.o)

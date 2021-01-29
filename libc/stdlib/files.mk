@@ -1,6 +1,6 @@
 # PINE64 ROCK64 Bare-Metal
 #
-# C Library
+# Userland C Library stdlib Sources
 # 
 # libc/stdlib
 

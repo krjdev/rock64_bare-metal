@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-26
- * Modified : 2021-02-28
+ * Modified : 2021-02-29
  * Revised  : 
  * Version  : 0.2.0.0
  * License  : ISC (see LICENSE.txt)
@@ -27,9 +27,9 @@
 
 #define DEV_FLAG_VALID      0x00000001
 #define DEV_FLAG_ATTACHED   0x00000002
-#define DEV_FLAG_ACTIVE     0x00000004
+#define DEV_FLAG_ACTIVE     0x00000004  /* Currently not used */
 #define DEV_FLAG_OPENED     0x00000010
-#define DEV_FLAG_BUSY       0x00000020
+#define DEV_FLAG_BUSY       0x00000020  /* Currently not used */
 #define DEV_FLAG_ERR        0x10000000
 
 #define DEV_OPS_OPEN        0x00000001
@@ -42,9 +42,9 @@
 #define DEV_OPS_IOCTL       0x00010000
 
 #define DEV_NAME_MAX        256
-#define DEV_PARENT_MAX      64
-#define DEV_CHILDS_MAX      64
-#define DEV_REQUIRE_MAX     64
+#define DEV_FRONT_MAX       64
+#define DEV_BACK_MAX        64
+#define DEV_REQ_MAX         64
 
 #define DEV_MAX             512
 
@@ -52,12 +52,12 @@ struct _kern_dev {
     uint32_t d_id;
     char d_name[DEV_NAME_MAX];
     uint32_t d_subid;
-    uint32_t d_parentnr;
-    struct _kern_dev *d_parent[DEV_PARENT_MAX];
+    uint32_t d_frontnr;
+    struct _kern_dev *d_front[DEV_FRONT_MAX];
+    uint32_t d_backnr;
+    struct _kern_dev *d_back[DEV_BACK_MAX];
     uint32_t d_reqnr;
-    struct _kern_dev *d_require[DEV_REQUIRE_MAX];
-    uint32_t d_childnr;
-    struct _kern_dev *d_childs[DEV_CHILDS_MAX];
+    struct _kern_dev *d_req[DEV_REQ_MAX];
     uint32_t d_type;
     uint32_t d_caps;
     uint32_t d_blocksz;
@@ -106,7 +106,7 @@ int kern_dev_init(void)
     return ESUCCESS;
 }
 
-static uint32_t dev_find_name_subid_high(const char *d_name)
+static uint32_t dev_find_subid_high_name(const char *d_name)
 {
     int i;
     int ret;
@@ -154,7 +154,7 @@ static struct _kern_dev *dev_get_subid_name(const char *d_name, uint32_t d_subid
     return NULL;
 }
 
-struct _kern_dev *kern_dev_create(uint32_t d_type, uint32_t d_caps, const char *d_name, struct _kern_dev *d_parent, uint32_t d_blocksz)
+struct _kern_dev *kern_dev_create(uint32_t d_type, uint32_t d_caps, const char *d_name, struct _kern_dev *d_front, uint32_t d_blocksz)
 {
     int i;
     struct _kern_dev *dev;
@@ -178,11 +178,11 @@ struct _kern_dev *kern_dev_create(uint32_t d_type, uint32_t d_caps, const char *
         return NULL;
     
     strcpy(dev->d_name, d_name);
-    dev->d_subid = dev_find_name_subid_high(dev->d_name);
+    dev->d_subid = dev_find_subid_high_name(dev->d_name);
     
-    if (d_parent) {
-        dev->d_parent[0] = d_parent;
-        dev->d_parentnr = 1;
+    if (d_front) {
+        dev->d_front[0] = d_front;
+        dev->d_frontnr = 1;
     }
     
     if (dev->d_caps & DEV_CAPS_BLK) {
@@ -253,44 +253,61 @@ void *kern_dev_get_config(struct _kern_dev *dev)
     return dev->d_conf;
 }
 
-int kern_dev_add_child(struct _kern_dev *dev, struct _kern_dev *dev_child)
+/* Add backend device */
+int kern_dev_add_back(struct _kern_dev *dev, struct _kern_dev *dev_back)
 {
     uint32_t i;
     
     if (!dev)
         return EINVAL;
     
-    if (!dev_child)
+    if (!dev_back)
         return EINVAL;
     
-    for (i = 0; i < DEV_CHILDS_MAX; i++) {
-        if (dev->d_childs[i] == NULL) {
-            dev->d_childs[i] = dev_child;
-            dev->d_childnr++;
-            break;
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (!(dev_back->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (dev->d_backnr >= DEV_BACK_MAX)
+        return EFULL;
+    
+    for (i = 0; i < DEV_BACK_MAX; i++) {
+        if (dev->d_back[i] == NULL) {
+            dev->d_back[i] = dev_back;
+            dev->d_backnr++;
+            return ESUCCESS;
         }
     }
     
-    return ESUCCESS;
+    return EFULL;
 }
 
-int kern_dev_del_child(struct _kern_dev *dev, struct _kern_dev *dev_child)
+/* Delete backend device */
+int kern_dev_del_back(struct _kern_dev *dev, struct _kern_dev *dev_back)
 {
     uint32_t i;
     
     if (!dev)
         return EINVAL;
     
-    if (!dev_child)
+    if (!dev_back)
         return EINVAL;
     
-    if (!dev->d_childnr)
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (!(dev_back->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (dev->d_backnr == 0)
         return ESUCCESS;
     
-    for (i = 0; i < DEV_CHILDS_MAX; i++) {
-        if (dev->d_childs[i] == dev_child) {
-            dev->d_childs[i] = NULL;
-            dev->d_childnr--;
+    for (i = 0; i < DEV_BACK_MAX; i++) {
+        if (dev->d_back[i] == dev_back) {
+            dev->d_back[i] = NULL;
+            dev->d_backnr--;
             break;
         }
     }
@@ -298,44 +315,61 @@ int kern_dev_del_child(struct _kern_dev *dev, struct _kern_dev *dev_child)
     return ESUCCESS;
 }
 
-int kern_dev_add_parent(struct _kern_dev *dev, struct _kern_dev *dev_parent)
+/* Add frontend device */
+int kern_dev_add_front(struct _kern_dev *dev, struct _kern_dev *dev_front)
 {
     uint32_t i;
     
     if (!dev)
         return EINVAL;
     
-    if (!dev_parent)
+    if (!dev_front)
         return EINVAL;
     
-    for (i = 0; i < DEV_PARENT_MAX; i++) {
-        if (dev->d_parent[i] == NULL) {
-            dev->d_parent[i] = dev_parent;
-            dev->d_parentnr++;
-            break;
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (!(dev_front->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (dev->d_frontnr >= DEV_FRONT_MAX)
+        return EFULL;
+    
+    for (i = 0; i < DEV_FRONT_MAX; i++) {
+        if (dev->d_front[i] == NULL) {
+            dev->d_front[i] = dev_front;
+            dev->d_frontnr++;
+            return ESUCCESS;
         }
     }
     
-    return ESUCCESS;
+    return EFULL;
 }
 
-int kern_dev_del_parent(struct _kern_dev *dev, struct _kern_dev *dev_parent)
+/* Delete frontend device */
+int kern_dev_del_front(struct _kern_dev *dev, struct _kern_dev *dev_front)
 {
     uint32_t i;
     
     if (!dev)
         return EINVAL;
     
-    if (!dev_parent)
+    if (!dev_front)
         return EINVAL;
     
-    if (!dev->d_parentnr)
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (!(dev_front->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (dev->d_frontnr == 0)
         return ESUCCESS;
     
-    for (i = 0; i < DEV_PARENT_MAX; i++) {
-        if (dev->d_parent[i] == dev_parent) {
-            dev->d_parent[i] = NULL;
-            dev->d_parentnr--;
+    for (i = 0; i < DEV_FRONT_MAX; i++) {
+        if (dev->d_front[i] == dev_front) {
+            dev->d_front[i] = NULL;
+            dev->d_frontnr--;
             break;
         }
     }
@@ -343,6 +377,7 @@ int kern_dev_del_parent(struct _kern_dev *dev, struct _kern_dev *dev_parent)
     return ESUCCESS;
 }
 
+/* Add required device */
 int kern_dev_add_require(struct _kern_dev *dev, struct _kern_dev *dev_req)
 {
     uint32_t i;
@@ -353,17 +388,27 @@ int kern_dev_add_require(struct _kern_dev *dev, struct _kern_dev *dev_req)
     if (!dev_req)
         return EINVAL;
     
-    for (i = 0; i < DEV_REQUIRE_MAX; i++) {
-        if (dev->d_require[i] == NULL) {
-            dev->d_require[i] = dev_req;
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (!(dev_req->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (dev->d_reqnr >= DEV_REQ_MAX)
+        return EFULL;
+    
+    for (i = 0; i < DEV_REQ_MAX; i++) {
+        if (dev->d_req[i] == NULL) {
+            dev->d_req[i] = dev_req;
             dev->d_reqnr++;
-            break;
+            return ESUCCESS;
         }
     }
     
-    return ESUCCESS;
+    return EFULL;
 }
 
+/* Delete required device */
 int kern_dev_del_require(struct _kern_dev *dev, struct _kern_dev *dev_req)
 {
     uint32_t i;
@@ -374,12 +419,18 @@ int kern_dev_del_require(struct _kern_dev *dev, struct _kern_dev *dev_req)
     if (!dev_req)
         return EINVAL;
     
-    if (!dev->d_reqnr)
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (!(dev_req->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (dev->d_reqnr == 0)
         return ESUCCESS;
     
-    for (i = 0; i < DEV_REQUIRE_MAX; i++) {
-        if (dev->d_require[i] == dev_req) {
-            dev->d_require[i] = NULL;
+    for (i = 0; i < DEV_REQ_MAX; i++) {
+        if (dev->d_req[i] == dev_req) {
+            dev->d_req[i] = NULL;
             dev->d_reqnr--;
             break;
         }
@@ -388,6 +439,7 @@ int kern_dev_del_require(struct _kern_dev *dev, struct _kern_dev *dev_req)
     return ESUCCESS;
 }
 
+/* Attach all current devices */
 int kern_dev_attach_all(void)
 {
     int i;
@@ -400,15 +452,21 @@ int kern_dev_attach_all(void)
         if (!(dev->d_flags & DEV_FLAG_VALID))
             continue;
         
+        if (dev->d_flags & DEV_FLAG_ATTACHED)
+            continue;
+        
         ret = dev->d_op_attach(dev);
         
         if (ret != ESUCCESS)
             return ret;
+        
+        dev->d_flags |= DEV_FLAG_ATTACHED;
     }
     
     return ESUCCESS;
 }
 
+/* Attach device */
 int kern_dev_attach(struct _kern_dev *dev)
 {
     int ret;
@@ -416,20 +474,50 @@ int kern_dev_attach(struct _kern_dev *dev)
     if (!dev)
         return EINVAL;
     
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (dev->d_flags & DEV_FLAG_ATTACHED)
+        return ESUCCESS;
+    
     ret = dev->d_op_attach(dev);
     
     if (ret != ESUCCESS)
         return ret;
     
+    dev->d_flags |= DEV_FLAG_ATTACHED;
     return ESUCCESS;
 }
 
-uint32_t kern_dev_error(struct _kern_dev *dev)
+uint32_t kern_dev_get_error(struct _kern_dev *dev)
 {
     if (!dev)
         return EINVAL;
     
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (!(dev->d_flags & DEV_FLAG_ERR))
+        return ESUCCESS;
+    
     return dev->d_err;
+}
+
+int kern_dev_set_error(struct _kern_dev *dev, uint32_t err)
+{
+    if (!dev)
+        return EINVAL;
+    
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return ENODEV;
+    
+    if (err != ESUCCESS) {
+        dev->d_flags |= DEV_FLAG_ERR;
+        dev->d_err = err;
+    }
+    
+    dev->d_flags &= ~(DEV_FLAG_ERR);
+    return ESUCCESS;
 }
 
 int kern_dev_find_name(const char *d_name, struct _kern_dev ***ret_devs)
@@ -539,7 +627,6 @@ struct _kern_dev *kern_dev_select_name(const char *d_name, uint32_t d_subid)
     if (strlen(d_name) >= DEV_NAME_MAX)
         return NULL;
     
-    
     return dev_get_subid_name(d_name, d_subid);
 }
 
@@ -551,8 +638,14 @@ struct _kern_dev *kern_dev_select_require(struct _kern_dev *dev, uint32_t d_subi
     if (!dev)
         return NULL;
     
-    for (i = 0; i < dev->d_reqnr; i++) {
-        dev_req = dev->d_require[i];
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return NULL;
+    
+    for (i = 0; i < DEV_REQ_MAX; i++) {
+        dev_req = dev->d_req[i];
+        
+        if (!(dev_req->d_flags & DEV_FLAG_VALID))
+            continue;
         
         if (dev_req->d_subid == d_subid)
             return dev_req;
@@ -561,37 +654,49 @@ struct _kern_dev *kern_dev_select_require(struct _kern_dev *dev, uint32_t d_subi
     return NULL;
 }
 
-struct _kern_dev *kern_dev_select_child(struct _kern_dev *dev, uint32_t d_subid)
+struct _kern_dev *kern_dev_select_back(struct _kern_dev *dev, uint32_t d_subid)
 {
     uint32_t i;
-    struct _kern_dev *dev_req;
+    struct _kern_dev *dev_back;
     
     if (!dev)
         return NULL;
     
-    for (i = 0; i < dev->d_childnr; i++) {
-        dev_req = dev->d_childs[i];
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return NULL;
+    
+    for (i = 0; i < DEV_BACK_MAX; i++) {
+        dev_back = dev->d_back[i];
         
-        if (dev_req->d_subid == d_subid)
-            return dev_req;
+        if (!(dev_back->d_flags & DEV_FLAG_VALID))
+            continue;
+        
+        if (dev_back->d_subid == d_subid)
+            return dev_back;
     }
     
     return NULL;
 }
 
-struct _kern_dev *kern_dev_select_parent(struct _kern_dev *dev, uint32_t d_subid)
+struct _kern_dev *kern_dev_select_front(struct _kern_dev *dev, uint32_t d_subid)
 {
     uint32_t i;
-    struct _kern_dev *dev_req;
+    struct _kern_dev *dev_front;
     
     if (!dev)
         return NULL;
     
-    for (i = 0; i < dev->d_parentnr; i++) {
-        dev_req = dev->d_parent[i];
+    if (!(dev->d_flags & DEV_FLAG_VALID))
+        return NULL;
+    
+    for (i = 0; i < DEV_FRONT_MAX; i++) {
+        dev_front = dev->d_front[i];
         
-        if (dev_req->d_subid == d_subid)
-            return dev_req;
+        if (!(dev_front->d_flags & DEV_FLAG_VALID))
+            continue;
+        
+        if (dev_front->d_subid == d_subid)
+            return dev_front;
     }
     
     return NULL;

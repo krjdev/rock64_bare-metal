@@ -1,11 +1,20 @@
+# Target files
+*.elf
+*.elf.map
+
+# Object files
 *.so
 *.so*
 *.o
+
+# Texteditor backup files
 *~
 *.*.swp
 *.*.kate-swp
 .directory
-*.elf
-*.elf.map
 
+# TODO directory
+TODO
+
+# GIT commit message template
 GIT_COMMIT.txt

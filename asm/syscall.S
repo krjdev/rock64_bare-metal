@@ -1,7 +1,7 @@
 /**
  *
  * File Name: asm/syscall.S
- * Title    : AArch64 Syscalls for Userland
+ * Title    : AArch64 Syscalls for User Application
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-29
@@ -31,6 +31,19 @@ SYSCALL(asm_SYS_proc_exit)
 /* Exit abnormal */
 SYSCALL(asm_SYS_proc_abort)
     mov x0, #__SYS_PROC_ABRT
+    svc #__SYS_PROC
+
+/* Allocate memory */
+SYSCALL(asm_SYS_proc_alloc)
+    mov x2, x1                  /* Flags */
+    mov x1, x0                  /* Length */
+    mov x0, #__SYS_PROC_ALLO
+    svc #__SYS_PROC
+
+/* Deallocate (free) memory */
+SYSCALL(asm_SYS_proc_dealloc)
+    mov x1, x0                  /* Pointer to allocated memory */
+    mov x0, #__SYS_PROC_DEAL
     svc #__SYS_PROC
 
 /* File operations */

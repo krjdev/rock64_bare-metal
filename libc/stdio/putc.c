@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-27
- * Modified : 
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -16,13 +16,20 @@
  *
  */
 
-#include <stdint.h>
-#include <unistd.h>
+#include <stddef.h>
+#include <stream.h>
+#include <stdio.h>
 
-int putc(const char c)
+int putc(int c, struct _IO_FILE *stream)
 {
-    uint8_t buf[1];
+    ssize_t ret;
+    char buf[1];
     
-    buf[0] = (uint8_t) c;
-    return write(1, buf, 1);
+    buf[0] = (char) c;
+    ret = stream_write(stream, (const void *) buf, 1);
+    
+    if (ret == -1)
+        return EOF;
+    
+    return (int) buf[0];
 }

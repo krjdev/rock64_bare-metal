@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-25
- * Modified : 2021-01-26
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.0.1
  * License  : ISC (see LICENSE.txt)
@@ -17,10 +17,18 @@
  */
 
 #include <string.h>
-#include <stdint.h>
-#include <unistd.h>
+#include <stream.h>
+#include <stddef.h>
+#include <stdio.h>
 
-int puts(const char *s)
+int puts(const char *str)
 {
-    return write(1, (const uint8_t *) s, strlen(s));
+    ssize_t ret;
+    
+    ret = stream_write(stdout, (const void *) str, strlen(str));
+    
+    if (ret == -1)
+        return EOF;
+    
+    return (int) ret;
 }

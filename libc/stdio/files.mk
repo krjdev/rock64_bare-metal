@@ -5,4 +5,5 @@
 # libc/stdio
 
 CSRC_USER	+= libc/stdio/putc.c
+CSRC_USER	+= libc/stdio/putchar.c
 CSRC_USER	+= libc/stdio/puts.c

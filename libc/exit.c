@@ -16,7 +16,7 @@
  *
  */
 
-void libc_exit(void)
+int libc_exit(int code)
 {
-    
+    return code;
 }

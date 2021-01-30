@@ -1,11 +1,11 @@
 /**
  *
  * File Name: ld/user.ld
- * Title    : Linker Script for Userspace (EL0)
+ * Title    : Linker Script for User Application
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-25
- * Modified : 
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -16,16 +16,20 @@
  *
  */
 
-ENTRY(_start_user)
+ENTRY(_start)
 
 MEMORY {
-    RAM_USER (rwx) : ORIGIN = 0x40000000, LENGTH = 256M
+    RAM_USER (rwx) : ORIGIN = 0x40000000, LENGTH = 1024M
 }
+
+/* Inital User Heap size */
+USER_HEAP_SIZE = 4K;
 
 SECTIONS {
     _user_s = .;
     
     .text :  {
+        . = ALIGN(4K);
         _user_text_s = .;
         *(.text)
         *(.text*)
@@ -58,13 +62,12 @@ SECTIONS {
         _user_bss_e = .;
     } > RAM_USER
     
-    USER_HEAP_SIZE = (ORIGIN(RAM_USER) + LENGTH(RAM_USER)) - _user_heap_s;
-    
     .heap (NOLOAD): {
         . = ALIGN(4K);
         _user_heap_s = .;
         . = . + USER_HEAP_SIZE;
         _user_heap_e = .;
     } > RAM_USER
+    
     _user_e = .;
 }

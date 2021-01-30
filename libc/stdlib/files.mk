@@ -7,6 +7,7 @@
 CSRC_USER	+= libc/stdlib/abort.c
 CSRC_USER	+= libc/stdlib/atoi.c
 CSRC_USER	+= libc/stdlib/atol.c
+CSRC_USER	+= libc/stdlib/exit.c
 CSRC_USER	+= libc/stdlib/free.c
 CSRC_USER	+= libc/stdlib/malloc.c
 CSRC_USER	+= libc/stdlib/realloc.c

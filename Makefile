@@ -16,6 +16,7 @@ LD		= $(CROSS_COMPILE)ld
 OBJCOPY		= $(CROSS_COMPILE)objcopy
 
 ASFLAGS		+= -Wa,-mcpu=cortex-a53
+ASFLAGS		+= -D_ASM_ASSEMBLER_
 
 CCFLAGS		+= -Wall
 CCFLAGS		+= -Wextra
@@ -27,8 +28,11 @@ CCFLAGS		+= -mcpu=cortex-a53
 CCFLAGS_KERN	= $(CCFLAGS)
 CCFLAGS_KERN	+= -I ./sys/include
 
-# Userland
+# Userland libc (Internal)
 CCFLAGS_USER	= $(CCFLAGS)
+CCFLAGS_USER	+= -I ./libc/include
+
+# Userland
 CCFLAGS_USER	+= -I ./include
 
 # Global GNU ld flags

@@ -29,7 +29,7 @@ __el0_bss:
     ldr x1, =_user_bss_e
     sub x1, x1, x0
     mov x2, #0x0
-    cbz x1, __el0_libc
+    cbz x1, __el0_libc_init
 __el0_bss_loop:
     strb w2, [x0], #1
     sub x1, x1, #1

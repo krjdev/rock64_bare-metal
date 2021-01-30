@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-25
- * Modified : 
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -16,42 +16,43 @@
  *
  */
 
-#include <stdint.h>
-#include <stddef.h>
-
 #include <asm/syscall.h>
+#include <syscall.h>
 
-void sys_exit(int nr)
+/* Process operations */
+/* Exit normal */
+void SYS_proc_exit(int code)
 {
-    _sys_exit(nr);
+    asm_SYS_proc_exit(code);
 }
 
-int sys_open(const char *file, int flags)
+/* Exit abnormal (abort function) */
+void SYS_proc_abort(void)
 {
-    return sys_open(file, flags);
+    asm_SYS_proc_abort();
 }
 
-void sys_close(int fd)
+/* File operations */
+/* Close file */
+int SYS_file_close(int fd)
 {
-    _sys_close(fd);
+    return asm_SYS_file_close(fd);
 }
 
-int sys_write(int fd, const uint8_t *buf, size_t len)
+/* Write to file */
+ssize_t SYS_file_write(int fd, const void *buf, size_t len)
 {
-    return _sys_write(fd, buf, len);
+    return asm_SYS_file_write(fd, buf, len);
 }
 
-int sys_read(int fd, uint8_t *buf, size_t len)
+/* Read from file */
+ssize_t SYS_file_read(int fd, void *buf, size_t len)
 {
-    return _sys_read(fd, buf, len);
+    return asm_SYS_file_read(fd, buf, len);
 }
 
-void sys_sleep(int seconds)
+/* Synchronize file (flush buffers) */
+int SYS_file_fsync(int fd)
 {
-    _sys_sleep(seconds);
-}
-
-void sys_abort(void)
-{
-    _sys_abort();
+    return asm_SYS_file_fsync(fd);
 }

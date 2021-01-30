@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-16
- * Modified : 2021-01-26
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.1.0
  * License  : ISC (see LICENSE.txt)
@@ -166,9 +166,9 @@ static size_t do_size(void *p)
 
 void heap_init(void)
 {
-    heap.p_start = (uint64_t *) _self_user_get_heap_s();
-    heap.p_end = (uint64_t *) _self_user_get_heap_e();
-    heap.len_bytes = _self_user_get_heap_e() - _self_user_get_heap_s();
+    heap.p_start = (uint64_t *) asm_self_user_get_heap_s();
+    heap.p_end = (uint64_t *) asm_self_user_get_heap_e();
+    heap.len_bytes = asm_self_user_get_heap_e() - asm_self_user_get_heap_s();
     heap.len_block = heap.len_bytes / sizeof(uint64_t);
     heap.free_bytes = heap.len_bytes;
     heap.free_block = heap.len_block;

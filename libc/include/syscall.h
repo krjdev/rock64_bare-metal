@@ -27,6 +27,8 @@
 extern void SYS_proc_exit(int code);
 /* Exit abnormal (abort function) */
 extern void SYS_proc_abort(void);
+/* Allocate memory */
+extern void *SYS_proc_alloc(size_t len, int flags);
 
 /* File operations */
 /* Close file */

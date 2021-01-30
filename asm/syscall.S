@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-29
- * Modified : 
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -17,33 +17,49 @@
  */
 
 #include <asm/asm.h>
+#include <asm/syscall.h>
 
 .text
 
-SYSCALL(_sys_exit)
-    svc #0
+/* Process operations */
+/* Exit normal */
+SYSCALL(asm_SYS_proc_exit)
+    mov x1, x0                  /* Exit code */
+    mov x0, #__SYS_PROC_EXIT
+    svc #__SYS_PROC
 
-SYSCALL(_sys_open)
-    svc #1
-    ret
+/* Exit abnormal */
+SYSCALL(asm_SYS_proc_abort)
+    mov x0, #__SYS_PROC_ABRT
+    svc #__SYS_PROC
 
-SYSCALL(_sys_close)
-    svc #2
-    ret
+/* File operations */
+/* Close file */
+SYSCALL(asm_SYS_file_close)
+    mov x1, x0                  /* File descriptor */
+    mov x0, #__SYS_FILE_CLOS
+    svc #__SYS_FILE
 
-SYSCALL(_sys_write)
-    svc #3
-    ret
+/* Write to file */
+SYSCALL(asm_SYS_file_write)
+    mov x3, x2                  /* Length */
+    mov x2, x1                  /* Pointer to Buffer */
+    mov x1, x0                  /* File descriptor */
+    mov x0, #__SYS_FILE_WRIT
+    svc #__SYS_FILE
 
-SYSCALL(_sys_read)
-    svc #4
-    ret
+/* Read from file */
+SYSCALL(asm_SYS_file_read)
+    mov x3, x2                  /* Length */
+    mov x2, x1                  /* Pointer to Buffer */
+    mov x1, x0                  /* File descriptor */
+    mov x0, #__SYS_FILE_READ
+    svc #__SYS_FILE
 
-SYSCALL(_sys_sleep)
-    svc #5
-    ret
-
-SYSCALL(_sys_abort)
-    svc #6
+/* Synchronize file (flush buffers) */
+SYSCALL(asm_SYS_file_fsync)
+    mov x1, x0                  /* File descriptor */
+    mov x0, #__SYS_FILE_SYNC
+    svc #__SYS_FILE
 
 .end

@@ -1,5 +1,10 @@
 # PINE64 Rock64 Bare-Metal Example
 
+## ATTENTION
+
+This branch is under development. Building currently fails, because of missing
+files. Rewrite in progress!
+
 ## Features
 
 **Kernel**

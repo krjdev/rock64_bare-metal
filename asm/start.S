@@ -1,11 +1,11 @@
 /**
  *
  * File Name: asm/start.S
- * Title    : AArch64 Main entry point for Uaserland
+ * Title    : AArch64 Main entry point for User Application
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-29
- * Modified : 
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -17,10 +17,11 @@
  */
 
 #include <asm/asm.h>
+#include <asm/syscall.h>
 
 .text
 
-ENTRY(_start_user)
+ENTRY(_start)
 __el0_enter:
     /* Zero BSS */
 __el0_bss:
@@ -35,11 +36,16 @@ __el0_bss_loop:
     cbnz x1, __el0_bss_loop
     stp x29, x30, [sp, #-16]!
     mov x29, sp
-__el0_libc:
+__el0_libc_init:
     bl libc_init
+__el0_main:
     bl main
+__el0_libc_exit:
+    bl libc_exit
     ldp x29, x30, [sp], #16
 __el0_exit:
-    svc #0
+    mov x1, x0
+    mov x0, #__SYS_PROC_EXIT
+    svc #__SYS_PROC
 
 .end

@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-29
- * Modified : 
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -25,10 +25,17 @@
 #define NULL    ((void *)0)
 #endif
 
-extern int atoi(const char *s);
+/* Process functions */
 extern void abort(void);
-extern void free(void *ptr);
+extern void exit(int code);
+
+/* Memory allocation functions */
 extern void *malloc(size_t len);
 extern void *realloc(void *ptr, size_t len);
+extern void free(void *ptr);
+
+/* Conversion functions */
+extern int atoi(const char *s);
+extern long int atol(const char *s);
 
 #endif

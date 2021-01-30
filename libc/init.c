@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-26
- * Modified : 
+ * Modified : 2021-01-30
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -17,8 +17,10 @@
  */
 
 #include <heap.h>
+#include <stream.h>
 
 void libc_init(void)
 {
     heap_init();
+    stream_init();
 }

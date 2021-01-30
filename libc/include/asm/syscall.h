@@ -24,6 +24,8 @@
 
 #define __SYS_PROC_EXIT             0   /* Exit normal */
 #define __SYS_PROC_ABRT             1   /* Exit abnormal */
+#define __SYS_PROC_ALLO             2   /* Allocate memory */
+#define __SYS_PROC_DEAL             3   /* Deallocate memory */
 
 /* Filesystem operations */
 #define __SYS_FILE                  1   /* File operation */
@@ -45,6 +47,12 @@ extern void asm_SYS_proc_exit(int code);
 
 /* Exit abnormal */
 extern void asm_SYS_proc_abort(void);
+
+/* Allocate memory */
+extern void *asm_SYS_proc_alloc(size_t len, int flags);
+
+/* Deallocate (free) memory */
+extern int *asm_SYS_proc_dealloc(const void *buf);
 
 /* File operations */
 /* Close file */

@@ -18,11 +18,19 @@
 
 #include <syscall.h>
 #include <unistd.h>
+#include <errno.h>
 
 ssize_t write(int fd, const void *buf, size_t len)
 {
-    if (fd == STDIN_FILENO)
+    if (fd == STDIN_FILENO) {
+        errno = EBADF;
         return -1;
+    }
+    
+    if (!buf) {
+        errno = EINVAL;
+        return -1;
+    }
     
     return SYS_file_write(fd, buf, len);
 }

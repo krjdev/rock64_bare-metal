@@ -4,4 +4,5 @@
 # 
 # libc/unistd
 
+CSRC_USER	+= libc/unistd/read.c
 CSRC_USER	+= libc/unistd/write.c

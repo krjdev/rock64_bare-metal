@@ -4,8 +4,10 @@ arch: arm64
 
 compiler: gcc
 
+env:
+    - CROSS_COMPILE=./toolchain/aarch64-none-elf/bin/aarch64-none-elf-
+
 before_install:
     - sh ./scripts/toolchain.sh
-    - export CROSS_COMPILE=./toolchain/aarch64-none-elf/bin/aarch64-none-elf-
 
 script: make

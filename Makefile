@@ -30,11 +30,11 @@ CCFLAGS		+= -mcpu=cortex-a53
 CCFLAGS_KERN	= $(CCFLAGS)
 CCFLAGS_KERN	+= -I ./sys/include
 
-# Userland libc (Internal)
+# User Application libc (Internal)
 CCFLAGS_USER	= $(CCFLAGS)
 CCFLAGS_USER	+= -I ./libc/include
 
-# Userland
+# User Application
 CCFLAGS_USER	+= -I ./include
 
 # Global GNU ld flags
@@ -45,7 +45,7 @@ LDFLAGS_KERN	= $(LDFLAGS)
 LDFLAGS_KERN	+= --gc-sections
 LDFLAGS_KERN	+= -Map=$(TARGET_KERN).map
 
-# Userland
+# User Application
 LDFLAGS_USER	= $(LDFLAGS)
 LDFLAGS_USER	+= --gc-sections
 LDFLAGS_USER	+= -Map=$(TARGET_USER).map
@@ -55,55 +55,55 @@ LDFLAGS_MAIN	= $(LDFLAGS)
 LDFLAGS_MAIN	+= -Map=$(TARGET).map
 
 # Kernel
-#include sys/files.mk
+include sys/files.mk
 
-# Userland
+# User Application
 include files.mk
 
-#AOBJ_KERN 	+= $(ASRC_KERN:.S=.o)
-#COBJ_KERN 	+= $(CSRC_KERN:.c=.o)
+AOBJ_KERN 	+= $(ASRC_KERN:.S=.o)
+COBJ_KERN 	+= $(CSRC_KERN:.c=.o)
 
 AOBJ_USER 	+= $(ASRC_USER:.S=.o)
 COBJ_USER 	+= $(CSRC_USER:.c=.o)
 
-all: user
+all: kern user
 
-#main: kern user
-#	@echo "[LD] $(TARGET)"
-#	@$(OBJCOPY) -O elf64-littleaarch64 -S $(TARGET_USER) $(TARGET_USER) 2> /dev/null
-#	@$(LD) -o $(TARGET) $(LDFLAGS_MAIN) $(TARGET_KERN) $(TARGET_USER)
+main: kern user
+	@echo "[LD] $(TARGET)"
+	@$(OBJCOPY) -O elf64-littleaarch64 -S $(TARGET_USER) $(TARGET_USER) 2> /dev/null
+	@$(LD) -o $(TARGET) $(LDFLAGS_MAIN) $(TARGET_KERN) $(TARGET_USER)
 
 # Kernel
-#kern: $(AOBJ_KERN) $(COBJ_KERN)
-#	@echo "[LD] $(TARGET_KERN)"
-#	@$(LD) -o $(TARGET_KERN) $(LDFLAGS_KERN) $(AOBJ_KERN) $(COBJ_KERN)
+kern: $(AOBJ_KERN) $(COBJ_KERN)
+	@echo "[LD] $(TARGET_KERN)"
+	@$(LD) -o $(TARGET_KERN) $(LDFLAGS_KERN) $(AOBJ_KERN) $(COBJ_KERN)
 
-#$(COBJ_KERN): %.o: %.c
-#	@echo "[CC] $@"
-#	@$(CC) -c $(CCFLAGS_KERN) -o $@ $<
+$(COBJ_KERN): %.o: %.c
+	@echo "[CC] $@"
+	@$(CC) -c $(CCFLAGS_KERN) -o $@ $<
 
-#$(AOBJ_KERN): %.o: %.S
-#	@echo "[AS] $@"
-#	@$(CC) -c $(CCFLAGS_KERN) $(ASFLAGS) -o $@ $<
+$(AOBJ_KERN): %.o: %.S
+	@echo "[AS] $@"
+	@$(CC) -c $(CCFLAGS_KERN) $(ASFLAGS) -o $@ $<
 
-# Userland
+# User Application
 user: $(AOBJ_USER) $(COBJ_USER)
 	@echo "[LD] $(TARGET_USER)"
-	$(LD) -o $(TARGET_USER) $(LDFLAGS_USER) $(AOBJ_USER) $(COBJ_USER)
+	@$(LD) -o $(TARGET_USER) $(LDFLAGS_USER) $(AOBJ_USER) $(COBJ_USER)
 	
 $(COBJ_USER): %.o: %.c
 	@echo "[CC] $@"
-	$(CC) -c $(CCFLAGS_USER) -o $@ $<
+	@$(CC) -c $(CCFLAGS_USER) -o $@ $<
 
 $(AOBJ_USER): %.o: %.S
 	@echo "[AS] $@"
-	$(CC) -c $(CCFLAGS_USER) $(ASFLAGS) -o $@ $<
+	@$(CC) -c $(CCFLAGS_USER) $(ASFLAGS) -o $@ $<
 
 .PHONY: clean
 clean:
 	@echo "[CLEAN]"
-#	@$(RM) $(AOBJ_KERN) $(COBJ_KERN)
-#	@$(RM) $(TARGET_KERN) $(TARGET_KERN).map
+	@$(RM) $(AOBJ_KERN) $(COBJ_KERN)
+	@$(RM) $(TARGET_KERN) $(TARGET_KERN).map
 	@$(RM) $(AOBJ_USER) $(COBJ_USER)
 	@$(RM) $(TARGET_USER) $(TARGET_USER).map
 	@$(RM) $(TARGET) $(TARGET).map

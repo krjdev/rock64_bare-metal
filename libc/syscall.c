@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-25
- * Modified : 2021-01-30
+ * Modified : 2021-01-31
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -30,6 +30,17 @@ void SYS_proc_exit(int code)
 void SYS_proc_abort(void)
 {
     asm_SYS_proc_abort();
+}
+
+/* Allocate memory */
+void *SYS_proc_alloc(size_t len, int flags)
+{
+    return asm_SYS_proc_alloc(len, flags);
+}
+
+int SYS_proc_dealloc(const void *buf)
+{
+    return asm_SYS_proc_dealloc(buf);
 }
 
 /* File operations */

@@ -5,7 +5,7 @@
  * Project  : PINE64 ROCK64 Bare-Metal
  * Author   : Copyright (C) 2021 Johannes Krottmayer <krjdev@gmail.com>
  * Created  : 2021-01-30
- * Modified : 
+ * Modified : 2021-01-31
  * Revised  : 
  * Version  : 0.1.0.0
  * License  : ISC (see LICENSE.txt)
@@ -24,10 +24,6 @@
 struct _IO_FILE {
     int fd;
 };
-
-struct _IO_FILE *stdin;
-struct _IO_FILE *stdout;
-struct _IO_FILE *stderr;
 
 extern void stream_init(void);
 extern ssize_t stream_write(struct _IO_FILE *stream, const void *buf, size_t len);

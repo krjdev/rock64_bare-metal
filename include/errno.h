@@ -19,7 +19,7 @@
 #ifndef ROCK64_ERRNO_H
 #define ROCK64_ERRNO_H
 
-int errno;
+extern int errno;
 
 #define EINVAL      (-1)    /* Invalid argument */
 #define EBADF       (-2)    /* Invalid file descriptor */

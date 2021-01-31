@@ -21,6 +21,10 @@
 #include <unistd.h>
 #include <stream.h>
 
+struct _IO_FILE *stdin;
+struct _IO_FILE *stdout;
+struct _IO_FILE *stderr;
+
 void stream_init(void)
 {
     stdin = NULL;

@@ -52,7 +52,7 @@ extern void asm_SYS_proc_abort(void);
 extern void *asm_SYS_proc_alloc(size_t len, int flags);
 
 /* Deallocate (free) memory */
-extern int *asm_SYS_proc_dealloc(const void *buf);
+extern int asm_SYS_proc_dealloc(const void *buf);
 
 /* File operations */
 /* Close file */

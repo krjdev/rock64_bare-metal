@@ -53,36 +53,36 @@ LDFLAGS_MAIN	= $(LDFLAGS)
 LDFLAGS_MAIN	+= -Map=$(TARGET).map
 
 # Kernel
-include sys/files.mk
+#include sys/files.mk
 
 # Userland
 include files.mk
 
-AOBJ_KERN 	+= $(ASRC_KERN:.S=.o)
-COBJ_KERN 	+= $(CSRC_KERN:.c=.o)
+#AOBJ_KERN 	+= $(ASRC_KERN:.S=.o)
+#COBJ_KERN 	+= $(CSRC_KERN:.c=.o)
 
 AOBJ_USER 	+= $(ASRC_USER:.S=.o)
 COBJ_USER 	+= $(CSRC_USER:.c=.o)
 
-all: main
+all: user
 
-main: kern user
-	@echo "[LD] $(TARGET)"
-	@$(OBJCOPY) -O elf64-littleaarch64 -S $(TARGET_USER) $(TARGET_USER) 2> /dev/null
-	@$(LD) -o $(TARGET) $(LDFLAGS_MAIN) $(TARGET_KERN) $(TARGET_USER)
+#main: kern user
+#	@echo "[LD] $(TARGET)"
+#	@$(OBJCOPY) -O elf64-littleaarch64 -S $(TARGET_USER) $(TARGET_USER) 2> /dev/null
+#	@$(LD) -o $(TARGET) $(LDFLAGS_MAIN) $(TARGET_KERN) $(TARGET_USER)
 
 # Kernel
-kern: $(AOBJ_KERN) $(COBJ_KERN)
-	@echo "[LD] $(TARGET_KERN)"
-	@$(LD) -o $(TARGET_KERN) $(LDFLAGS_KERN) $(AOBJ_KERN) $(COBJ_KERN)
+#kern: $(AOBJ_KERN) $(COBJ_KERN)
+#	@echo "[LD] $(TARGET_KERN)"
+#	@$(LD) -o $(TARGET_KERN) $(LDFLAGS_KERN) $(AOBJ_KERN) $(COBJ_KERN)
 
-$(COBJ_KERN): %.o: %.c
-	@echo "[CC] $@"
-	@$(CC) -c $(CCFLAGS_KERN) -o $@ $<
+#$(COBJ_KERN): %.o: %.c
+#	@echo "[CC] $@"
+#	@$(CC) -c $(CCFLAGS_KERN) -o $@ $<
 
-$(AOBJ_KERN): %.o: %.S
-	@echo "[AS] $@"
-	@$(CC) -c $(CCFLAGS_KERN) $(ASFLAGS) -o $@ $<
+#$(AOBJ_KERN): %.o: %.S
+#	@echo "[AS] $@"
+#	@$(CC) -c $(CCFLAGS_KERN) $(ASFLAGS) -o $@ $<
 
 # Userland
 user: $(AOBJ_USER) $(COBJ_USER)
@@ -100,8 +100,8 @@ $(AOBJ_USER): %.o: %.S
 .PHONY: clean
 clean:
 	@echo "[CLEAN]"
-	@$(RM) $(AOBJ_KERN) $(COBJ_KERN)
-	@$(RM) $(TARGET_KERN) $(TARGET_KERN).map
+#	@$(RM) $(AOBJ_KERN) $(COBJ_KERN)
+#	@$(RM) $(TARGET_KERN) $(TARGET_KERN).map
 	@$(RM) $(AOBJ_USER) $(COBJ_USER)
 	@$(RM) $(TARGET_USER) $(TARGET_USER).map
 	@$(RM) $(TARGET) $(TARGET).map

@@ -89,15 +89,15 @@ all: user
 # Userland
 user: $(AOBJ_USER) $(COBJ_USER)
 	@echo "[LD] $(TARGET_USER)"
-	@$(LD) -o $(TARGET_USER) $(LDFLAGS_USER) $(AOBJ_USER) $(COBJ_USER)
+	$(LD) -o $(TARGET_USER) $(LDFLAGS_USER) $(AOBJ_USER) $(COBJ_USER)
 	
 $(COBJ_USER): %.o: %.c
 	@echo "[CC] $@"
-	@$(CC) -c $(CCFLAGS_USER) -o $@ $<
+	$(CC) -c $(CCFLAGS_USER) -o $@ $<
 
 $(AOBJ_USER): %.o: %.S
 	@echo "[AS] $@"
-	@$(CC) -c $(CCFLAGS_USER) $(ASFLAGS) -o $@ $<
+	$(CC) -c $(CCFLAGS_USER) $(ASFLAGS) -o $@ $<
 
 .PHONY: clean
 clean:

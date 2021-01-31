@@ -1,0 +1,7 @@
+language: c
+
+arch: arm64
+
+compiler: gcc
+
+script: make user

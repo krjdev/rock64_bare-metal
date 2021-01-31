@@ -2,7 +2,9 @@
 # 
 # Makefile
 
+ifeq ($(CROSS_COMPILE),)
 CROSS_COMPILE=aarch64-none-elf-
+endif
 
 # Target Output
 TARGET		= main.elf

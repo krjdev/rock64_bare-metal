@@ -7,10 +7,6 @@ GCC_AARCH64_XZ="$GCC_AARCH64_TAR.xz"
 GCC_AARCH64_ARM="https://developer.arm.com"
 GCC_AARCH64_LINK="$GCC_AARCH64_ARM/-/media/Files/downloads/gnu-a/$GCC_AARCH64_VERSION/binrel/$GCC_AARCH64_XZ"
 
-mkdir toolchain
-cd toolchain
-wget $GCC_AARCH64_LINK
-unxz $GCC_AARCH64_XZ
-tar -xf $GCC_AARCH64_TAR
-rm $GCC_AARCH64_TAR
+wget $GCC_AARCH64_LINK -O /tmp/$GCC_AARCH64_XZ
+tar -xf /tmp/$GCC_AARCH64_XZ
 mv $GCC_AARCH64 aarch64-none-elf

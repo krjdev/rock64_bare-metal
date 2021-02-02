@@ -1,0 +1,14 @@
+dist: bionic
+
+language:
+    - c
+
+compiler:
+    - gcc
+
+before_script:
+    - sh scripts/toolchain.sh
+    - export PATH=$PATH:$PWD/aarch64-none-elf/bin
+
+script:
+    - make

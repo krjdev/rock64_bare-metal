@@ -1,4 +1,5 @@
-# PINE64 Rock64 Bare-Metal Example
+# PINE64 Rock64 Bare-Metal Example 
+[![Build Status](https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=next)](https://www.travis-ci.com/krjdev/rock64_bare-metal)
 
 ## ATTENTION
 

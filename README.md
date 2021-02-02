@@ -1,10 +1,10 @@
-# PINE64 Rock64 Bare-Metal Example 
+# PINE64 Rock64 Bare-Metal
+
+## Build status
+[master](https://github.com/krjdev/rock64_bare-metal/tree/master)
+[![Build Status](https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=master)](https://www.travis-ci.com/krjdev/rock64_bare-metal)
+[next](https://github.com/krjdev/rock64_bare-metal/tree/next)
 [![Build Status](https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=next)](https://www.travis-ci.com/krjdev/rock64_bare-metal)
-
-## ATTENTION
-
-This branch is under development. Building currently fails, because of missing
-files. Rewrite in progress!
 
 ## Features
 
@@ -30,7 +30,7 @@ files. Rewrite in progress!
 
 ## Build
 
-### Bare-Metal Example
+### Bare-Metal
 #### Required Tools:
 
 * **GCC** for AArch64  

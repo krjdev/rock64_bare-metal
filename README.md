@@ -2,10 +2,10 @@
 
 ## Build status
 [Branch: master](https://github.com/krjdev/rock64_bare-metal/tree/master)
-<img align="right" width="100" height="100" src="https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=master">
+<img align="right" src="https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=master">
 
 [Branch: next](https://github.com/krjdev/rock64_bare-metal/tree/next)
-<img align="right" width="100" height="100" src="https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=next">
+<img align="right" src="https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=next">
 
 ## Features
 

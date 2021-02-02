@@ -1,10 +1,11 @@
 # PINE64 Rock64 Bare-Metal
 
 ## Build status
-[master](https://github.com/krjdev/rock64_bare-metal/tree/master)
-[![Build Status](https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=master)](https://www.travis-ci.com/krjdev/rock64_bare-metal)
-[next](https://github.com/krjdev/rock64_bare-metal/tree/next)
-[![Build Status](https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=next)](https://www.travis-ci.com/krjdev/rock64_bare-metal)
+[Branch: master](https://github.com/krjdev/rock64_bare-metal/tree/master)
+<img align="right" width="100" height="100" src="https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=master">
+
+[Branch: next](https://github.com/krjdev/rock64_bare-metal/tree/next)
+<img align="right" width="100" height="100" src="https://www.travis-ci.com/krjdev/rock64_bare-metal.svg?branch=next">
 
 ## Features
 
